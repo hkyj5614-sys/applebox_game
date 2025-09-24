@@ -253,6 +253,12 @@ class AppleGame {
         document.getElementById('gameState').textContent = 'finished';
         document.getElementById('finalScore').textContent = this.score;
         document.getElementById('gameOverModal').style.display = 'block';
+        
+        // 게임 종료 시 BGM 정지
+        if (window.bgmManager) {
+            window.bgmManager.pause();
+            window.bgmManager.stopGeneratedBGM();
+        }
     }
 
     updateUI() {
@@ -271,6 +277,12 @@ class AppleGame {
         
         document.getElementById('gameOverModal').style.display = 'none';
         document.getElementById('gameState').textContent = 'playing';
+        
+        // 게임 재시작 시 BGM 재생
+        if (window.bgmManager && window.bgmManager.isEnabled) {
+            window.bgmManager.generateGameBGM();
+            window.bgmManager.play();
+        }
         
         this.generateApples();
         this.updateUI();
