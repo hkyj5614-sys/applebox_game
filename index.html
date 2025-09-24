@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사과 숫자 퍼즐</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 인트로 화면 -->
+    <div class="intro-container" id="introScreen">
+        <div class="intro-content">
+            <div class="game-title">
+                <span class="developer">GameSaien</span>
+                <div class="title-text">
+                    <span class="fruit-text">사과</span>
+                    <span class="box-text">퍼즐</span>
+                </div>
+            </div>
+            
+            <div class="intro-main">
+                <button class="play-button" onclick="startGame()">
+                    <span class="play-text">Play</span>
+                </button>
+                
+                <div class="intro-description">
+                    <h3>게임 방법</h3>
+                    <ul>
+                        <li>마우스로 드래그하여 사과들을 선택하세요</li>
+                        <li>선택한 사과들의 숫자 합이 10이 되도록 하세요</li>
+                        <li>많은 사과를 선택할수록 높은 점수를 얻습니다</li>
+                        <li>60초 안에 최고 점수에 도전하세요!</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="intro-controls">
+                <button class="control-btn reset-btn" onclick="resetGame()">Reset</button>
+                <div class="settings">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="bgmToggle" checked>
+                        <span class="checkmark"></span>
+                        BGM
+                    </label>
+                    <div class="bgm-control">
+                        <span>BGM</span>
+                        <span class="bgm-icon">♪</span>
+                        <input type="range" class="volume-slider" min="0" max="100" value="75">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BGM 오디오 요소 -->
+    <audio id="bgmAudio" loop>
+        <source src="music.mp3" type="audio/mpeg">
+        <!-- 브라우저 호환성을 위한 추가 포맷 -->
+        <!-- <source src="bgm.wav" type="audio/wav"> -->
+        <!-- <source src="bgm.ogg" type="audio/ogg"> -->
+    </audio>
+
+    <!-- 게임 화면 -->
+    <div class="game-container" id="gameScreen" style="display: none;">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="title">
+                <span class="apple-icon">🍎</span>
+                사과 숫자 퍼즐
+            </div>
+            <div class="header-controls">
+                <div class="score-display">점수: <span id="score">0</span></div>
+                <button class="intro-btn" onclick="goToIntro()">인트로로</button>
+            </div>
+        </div>
+
+        <!-- 게임 상태 -->
+        <div class="game-status">
+            <span>상태: <span id="gameState">playing</span></span>
+            <span>시간: <span id="timer">60</span>s</span>
+            <span>점수: <span id="currentScore">0</span></span>
+        </div>
+
+        <!-- 게임 보드 -->
+        <div class="game-board" id="gameBoard">
+            <!-- 사과들이 여기에 동적으로 생성됩니다 -->
+        </div>
+
+        <!-- 게임 규칙 -->
+        <div class="game-rules">
+            <h3>게임 규칙</h3>
+            <ul>
+                <li><strong>목표:</strong> 사과 숫자의 합이 10이 되도록 선택</li>
+                <li><strong>조작법:</strong> 마우스로 드래그하여 사과 선택</li>
+                <li><strong>☆ 점수 규칙:</strong> 선택한 사과 개수 = 점수 (예: 3개로 합 10 → 3점)</li>
+            </ul>
+        </div>
+
+        <!-- 게임 오버 모달 -->
+        <div class="modal" id="gameOverModal">
+            <div class="modal-content">
+                <h2>게임 종료!</h2>
+                <p>최종 점수: <span id="finalScore">0</span>점</p>
+                <button onclick="restartGame()">다시 시작</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
