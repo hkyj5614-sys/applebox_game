@@ -255,9 +255,10 @@ class AppleGame {
         document.getElementById('gameOverModal').style.display = 'block';
         
         // 게임 종료 시 BGM 정지
-        if (window.bgmManager) {
-            window.bgmManager.pause();
-            window.bgmManager.stopGeneratedBGM();
+        if (bgmManager) {
+            bgmManager.pause();
+            bgmManager.stopGeneratedBGM();
+            console.log('게임 종료: BGM 정지');
         }
     }
 
@@ -279,9 +280,10 @@ class AppleGame {
         document.getElementById('gameState').textContent = 'playing';
         
         // 게임 재시작 시 BGM 재생
-        if (window.bgmManager && window.bgmManager.isEnabled) {
-            window.bgmManager.generateGameBGM();
-            window.bgmManager.play();
+        if (bgmManager && bgmManager.isEnabled) {
+            bgmManager.generateGameBGM();
+            bgmManager.play();
+            console.log('게임 재시작: BGM 재생');
         }
         
         this.generateApples();
