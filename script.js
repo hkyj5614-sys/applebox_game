@@ -365,10 +365,10 @@ class BGMManager {
         }
     }
 
-    // 게임용 BGM 생성 (music.mp3 우선, 없으면 생성된 BGM)
+    // 게임용 BGM 생성 (mario-bgm.mp3 우선, 없으면 생성된 BGM)
     generateGameBGM() {
-        // music.mp3 파일 로드 시도
-        this.audio.src = 'music.mp3';
+        // mario-bgm.mp3 파일 로드 시도
+        this.audio.src = 'mario-bgm.mp3';
         this.audio.load(); // 파일 다시 로드
         
         // 파일 로드 성공 시 재생
@@ -380,7 +380,7 @@ class BGMManager {
         
         // 파일 로드 실패 시 생성된 BGM 재생
         this.audio.addEventListener('error', () => {
-            console.log('music.mp3 로드 실패, 생성된 BGM으로 대체');
+            console.log('mario-bgm.mp3 로드 실패, 생성된 BGM으로 대체');
             this.createSimpleBGM();
         }, { once: true });
     }
@@ -388,33 +388,33 @@ class BGMManager {
     createSimpleBGM() {
         try {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const duration = 30; // 30초 길이의 완전한 곡
+            const duration = 16; // 16초 길이의 마리오 스타일 곡
             const bufferSize = audioContext.sampleRate * duration;
             const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
             const data = buffer.getChannelData(0);
 
-            // 더 복잡하고 완전한 멜로디 생성
+            // 마리오 스타일 BGM 생성
             for (let i = 0; i < bufferSize; i++) {
                 const time = i / audioContext.sampleRate;
                 
-                // 기본 멜로디 (C major 스케일)
-                const melody = this.generateMelody(time);
+                // 마리오 스타일 멜로디 (C major 스케일)
+                const melody = this.generateMarioMelody(time);
                 
-                // 베이스 라인
-                const bass = Math.sin(2 * Math.PI * 110 * time) * 0.05; // A2
+                // 마리오 스타일 베이스 라인
+                const bass = this.generateMarioBass(time);
                 
-                // 하모니
-                const harmony = Math.sin(2 * Math.PI * 330 * time) * 0.03; // E4
+                // 마리오 스타일 하모니
+                const harmony = this.generateMarioHarmony(time);
                 
-                // 리듬 패턴
-                const rhythm = Math.sin(2 * Math.PI * 4 * time) * 0.02;
+                // 마리오 스타일 리듬
+                const rhythm = this.generateMarioRhythm(time);
                 
-                // 볼륨 엔벨로프 (페이드 인/아웃)
+                // 볼륨 엔벨로프
                 let envelope = 1;
-                if (time < 1) envelope = time; // 페이드 인
-                if (time > duration - 1) envelope = duration - time; // 페이드 아웃
+                if (time < 0.5) envelope = time * 2; // 페이드 인
+                if (time > duration - 0.5) envelope = (duration - time) * 2; // 페이드 아웃
                 
-                data[i] = (melody + bass + harmony + rhythm) * envelope * 0.3;
+                data[i] = (melody + bass + harmony + rhythm) * envelope * 0.25;
             }
 
             const source = audioContext.createBufferSource();
@@ -426,30 +426,81 @@ class BGMManager {
             // 오디오 컨텍스트를 저장하여 나중에 정지할 수 있도록 함
             this.audioContext = audioContext;
             this.audioSource = source;
+            console.log('마리오 스타일 BGM 생성 완료');
         } catch (e) {
             console.log('BGM 생성 실패:', e);
         }
     }
 
-    generateMelody(time) {
-        // C major 스케일: C, D, E, F, G, A, B, C
+    generateMarioMelody(time) {
+        // 마리오 스타일 멜로디 (C major 스케일)
         const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
         
-        // 8비트 패턴으로 멜로디 생성
+        // 마리오 스타일 패턴 (8비트)
+        const beat = Math.floor(time * 4) % 16; // 4비트/초
+        let frequency;
+        
+        // 마리오 스타일 멜로디 패턴
+        if (beat < 4) {
+            frequency = notes[0]; // C
+        } else if (beat < 6) {
+            frequency = notes[2]; // E
+        } else if (beat < 8) {
+            frequency = notes[4]; // G
+        } else if (beat < 10) {
+            frequency = notes[2]; // E
+        } else if (beat < 12) {
+            frequency = notes[0]; // C
+        } else {
+            frequency = notes[4]; // G
+        }
+        
+        // 마리오 스타일 사각파 톤
+        const squareWave = Math.sin(2 * Math.PI * frequency * time) > 0 ? 0.1 : -0.1;
+        
+        return squareWave;
+    }
+
+    generateMarioBass(time) {
+        // 마리오 스타일 베이스 라인
+        const bassNotes = [130.81, 146.83, 164.81]; // C2, D2, E2
+        
         const beat = Math.floor(time * 2) % 8; // 2비트/초
-        const noteIndex = beat % notes.length;
-        const frequency = notes[noteIndex];
+        const frequency = bassNotes[beat % bassNotes.length];
         
-        // 아르페지오 효과
-        const arpeggio = Math.sin(2 * Math.PI * frequency * time * 2) * 0.1;
+        // 베이스 사각파
+        const bassWave = Math.sin(2 * Math.PI * frequency * time) > 0 ? 0.05 : -0.05;
         
-        // 메인 멜로디
-        const mainMelody = Math.sin(2 * Math.PI * frequency * time) * 0.08;
+        return bassWave;
+    }
+
+    generateMarioHarmony(time) {
+        // 마리오 스타일 하모니
+        const harmonyNotes = [392.00, 440.00, 493.88]; // G4, A4, B4
         
-        // 옥타브 변조
-        const octave = Math.sin(2 * Math.PI * frequency * 2 * time) * 0.04;
+        const beat = Math.floor(time * 8) % 12; // 8비트/초
+        const frequency = harmonyNotes[beat % harmonyNotes.length];
         
-        return mainMelody + arpeggio + octave;
+        // 하모니 사각파
+        const harmonyWave = Math.sin(2 * Math.PI * frequency * time) > 0 ? 0.03 : -0.03;
+        
+        return harmonyWave;
+    }
+
+    generateMarioRhythm(time) {
+        // 마리오 스타일 리듬 (드럼 효과)
+        const beat = Math.floor(time * 8) % 8; // 8비트/초
+        
+        if (beat === 0 || beat === 4) {
+            // 킥 드럼 효과
+            return Math.random() * 0.08 - 0.04;
+        } else if (beat === 2 || beat === 6) {
+            // 스네어 드럼 효과
+            return Math.random() * 0.06 - 0.03;
+        } else {
+            // 하이햇 효과
+            return Math.random() * 0.02 - 0.01;
+        }
     }
 
     stopGeneratedBGM() {
