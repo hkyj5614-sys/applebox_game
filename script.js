@@ -198,6 +198,9 @@ class AppleGame {
     }
 
     removeSelectedApples() {
+        // 효과음 재생
+        this.playPopSound();
+        
         this.selectedApples.forEach(apple => {
             // 게임 보드에서 제거 표시
             this.board[apple.row][apple.col].removed = true;
@@ -214,6 +217,18 @@ class AppleGame {
                 apple.element.textContent = ''; // 숫자도 제거
             }, 300);
         });
+    }
+
+    playPopSound() {
+        const popSound = document.getElementById('popSound');
+        if (popSound) {
+            // 효과음 재생 (볼륨 조절)
+            popSound.volume = 0.5;
+            popSound.currentTime = 0; // 처음부터 재생
+            popSound.play().catch(e => {
+                console.log('효과음 재생 실패:', e);
+            });
+        }
     }
 
     startTimer() {
