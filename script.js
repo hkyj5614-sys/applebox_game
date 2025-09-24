@@ -280,15 +280,20 @@ class BGMManager {
             this.isEnabled = bgmCheckbox.checked; // 초기 상태 설정
             bgmCheckbox.addEventListener('change', (e) => {
                 this.isEnabled = e.target.checked;
-                // 인트로 화면에서는 BGM 재생하지 않음
+                // 인트로 화면에서는 BGM 재생하지 않음 (게임 화면에서만 재생)
+                const introScreen = document.getElementById('introScreen');
                 const gameScreen = document.getElementById('gameScreen');
-                if (gameScreen && gameScreen.style.display !== 'none') {
+                
+                // 게임 화면이 보이고 인트로 화면이 숨겨진 경우에만 재생/정지
+                if (gameScreen && gameScreen.style.display !== 'none' && 
+                    introScreen && introScreen.style.display === 'none') {
                     if (this.isEnabled) {
                         this.play();
                     } else {
                         this.pause();
                     }
                 }
+                // 인트로 화면에서는 설정만 변경하고 재생하지 않음
             });
         }
 
