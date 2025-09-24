@@ -269,6 +269,7 @@ class BGMManager {
         this.audio = document.getElementById('bgmAudio');
         this.isEnabled = true;
         this.volume = 0.75; // 기본 볼륨 75%
+        this.isPlaying = false; // 재생 상태 추적
         this.setupEventListeners();
     }
 
@@ -279,10 +280,14 @@ class BGMManager {
             this.isEnabled = bgmCheckbox.checked; // 초기 상태 설정
             bgmCheckbox.addEventListener('change', (e) => {
                 this.isEnabled = e.target.checked;
-                if (this.isEnabled) {
-                    this.play();
-                } else {
-                    this.pause();
+                // 인트로 화면에서는 BGM 재생하지 않음
+                const gameScreen = document.getElementById('gameScreen');
+                if (gameScreen && gameScreen.style.display !== 'none') {
+                    if (this.isEnabled) {
+                        this.play();
+                    } else {
+                        this.pause();
+                    }
                 }
             });
         }
@@ -297,8 +302,11 @@ class BGMManager {
     }
 
     play() {
-        if (this.isEnabled && this.audio) {
-            this.audio.play().catch(e => {
+        if (this.isEnabled && this.audio && !this.isPlaying) {
+            this.audio.play().then(() => {
+                this.isPlaying = true;
+                console.log('BGM 재생 시작');
+            }).catch(e => {
                 console.log('BGM 재생 실패:', e);
                 // 브라우저 정책으로 자동 재생이 차단된 경우
                 if (e.name === 'NotAllowedError') {
@@ -311,6 +319,8 @@ class BGMManager {
     pause() {
         if (this.audio) {
             this.audio.pause();
+            this.isPlaying = false;
+            console.log('BGM 정지');
         }
     }
 
@@ -482,6 +492,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('introScreen').style.display = 'block';
     document.getElementById('gameScreen').style.display = 'none';
     
-    // BGM 매니저 초기화
+    // BGM 매니저 초기화 (인트로에서는 재생하지 않음)
     bgmManager = new BGMManager();
 });
